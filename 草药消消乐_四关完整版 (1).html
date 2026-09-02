@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>草药消消乐｜面部护理课堂</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#eef3e5,#f8efe1);font-family:"Microsoft YaHei",Arial;color:#3f4d36}
+.app{max-width:560px;margin:auto;padding:16px}.card{background:#fffaf0;border-radius:28px;padding:20px;box-shadow:0 8px 28px #0002;min-height:680px}
+h1{margin:0;font-size:30px}.sub{color:#78816f;margin:5px 0 16px}.top{display:flex;justify-content:space-between;background:#edf1e5;border-radius:16px;padding:12px;margin-bottom:12px}.progress{height:9px;background:#e2e5dc;border-radius:9px;overflow:hidden}.bar{height:100%;width:25%;background:#71865d;transition:.3s}
+h2{font-size:22px;margin:18px 0 8px}.hint{text-align:center;color:#737a6d}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.item{border:0;border-radius:19px;background:#fff;padding:19px 8px;font-size:20px;color:#3f4d36;box-shadow:0 4px 12px #0002;cursor:pointer}.item:disabled{cursor:default}.ok{background:#dcebcf!important}.wrong{animation:shake .25s}.msg{height:50px;text-align:center;padding:13px;font-weight:bold}.actions{text-align:center}.btn{border:0;border-radius:22px;background:#71865d;color:white;padding:11px 22px;font-size:16px;margin:3px}.hidden{display:none}.trophy{font-size:70px;text-align:center;margin-top:50px}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.badge{display:inline-block;padding:5px 10px;background:#eadfca;border-radius:20px;font-size:13px}
+</style></head>
+<body><div class="app"><div class="card">
+<h1>🌿 草药消消乐</h1><div class="sub">面部护理技术 · 课堂互动挑战</div>
+<div id="game">
+<div class="top"><span>第 <b id="level">1</b> / 4 关</span><b>⭐ <span id="score">0</span> 分</b></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<h2 id="title"></h2><div class="hint">找出本关与传统美容文化相关的材料</div>
+<div class="grid" id="grid"></div><div class="msg" id="msg"></div>
+<div class="actions"><button class="btn" id="next" onclick="nextLevel()" style="display:none">下一关 →</button><button class="btn" onclick="restart()">重新开始</button></div>
+</div>
+<div id="finish" class="hidden">
+<div class="trophy">🏆</div><h2 style="text-align:center">恭喜通关！</h2>
+<p style="text-align:center">你完成了4关草药美容挑战。</p>
+<p style="text-align:center">最终得分：<b id="finalScore"></b></p>
+<p style="text-align:center"><span class="badge">🌿 草本美容小达人</span></p>
+<div class="actions"><button class="btn" onclick="restart()">再玩一次</button></div>
+</div>
+</div></div>
+<script>
+const levels=[
+{t:"第一关｜课件里的美容材料",good:["🌿 益母草","🌸 桃花","🌱 兰","💎 珍珠粉"],bad:["🌶️ 花椒","🧄 大蒜","🌽 玉米","🍚 大米"]},
+{t:"第二关｜花草与传统美容",good:["🌹 玫瑰花","🌼 菊花","🪷 莲花","🌸 茉莉花"],bad:["🌶️ 辣椒","🧅 洋葱","🥔 土豆","🌽 玉米"]},
+{t:"第三关｜传统美容方常见材料",good:["🌿 白芷","🌿 白术","🌿 白茯苓","🌿 白及"],bad:["🌿 附子","🌿 半夏","🌿 黄连","🌿 吴茱萸"]},
+{t:"第四关｜终极草药消消乐",good:["🌿 当归","🌿 茯苓","🌿 薏苡仁","🌿 枸杞子","🌿 甘草","🌿 玉竹"],bad:["🌿 附子","🌿 半夏","🌿 黄连","🌿 草果","🌿 吴茱萸","🌿 牛膝"]}
+];
+let li=0,score=0,found=0;
+function render(){
+ const x=levels[li]; found=0;
+ level.textContent=li+1; title.textContent=x.t; scoreEl(); msg.textContent="";
+ bar.style.width=((li+1)/4*100)+"%"; next.style.display="none";
+ let a=x.good.concat(x.bad).sort(()=>Math.random()-.5);
+ grid.innerHTML=a.map(v=>`<button class="item" data-good="${x.good.includes(v)}" onclick="pick(this)">${v}</button>`).join("");
+}
+function scoreEl(){score.textContent=score}
+function pick(el){
+ if(el.disabled)return;
+ if(el.dataset.good==="true"){
+   el.disabled=true;el.classList.add("ok");score+=10;found++;scoreEl();msg.textContent="✨ 找对了！ +10";
+   if(found===levels[li].good.length){msg.textContent="🎉 本关完成！";if(li<3)next.style.display="inline-block";else setTimeout(finish,450)}
+ }else{
+   score=Math.max(0,score-5);scoreEl();msg.textContent="💡 再想想！ -5";el.classList.add("wrong");setTimeout(()=>el.classList.remove("wrong"),300)
+ }
+}
+function nextLevel(){if(found===levels[li].good.length&&li<3){li++;render()}}
+function finish(){game.classList.add("hidden");finishBox();finalScore.textContent=score}
+function finishBox(){document.getElementById("finish").classList.remove("hidden")}
+function restart(){document.getElementById("finish").classList.add("hidden");game.classList.remove("hidden");li=0;score=0;render()}
+render();
+</script></body></html>
